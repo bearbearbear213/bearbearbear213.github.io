@@ -43,6 +43,7 @@
       "
     >
       <div
+        id="clearM"
         style="
           touch-action: none;
           position: absolute;
@@ -280,6 +281,7 @@
       stop = true;
       var over = document.getElementById("stageClear");
       over.style.display = "block";
+      document.getElementById("clearM").innerHTML="StageClear"
     };
     var hiidenClear = () => {
       stop = false;
@@ -807,6 +809,7 @@
     ];
 
     var setstage = () => {
+      if(stagenumber==13){playing=false}
       document.getElementById("stop").innerHTML = "⏸️";
       document.getElementById("totitle").style.display =
         document.getElementById("restart").style.display = "none";
@@ -1834,6 +1837,7 @@
 
             for (var n of entitys) {
               if (col(self, n) && n.id == "goal" && keyFlag) {
+                if(stagenumber==12){document.getElementById("clearM").innerHTML="GameClear"}
                 stagenumber++;
                 stageClear();
                 setTimeout(() => {
