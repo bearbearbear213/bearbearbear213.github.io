@@ -164,7 +164,7 @@
           top: 70%;
           left: 40%;
         "
-        onclick="stagenumber = 0;main()"
+        onclick="stagenumber = 0;continueFlag=true;main()"
       >
         start
       </button>
@@ -210,7 +210,7 @@
           background: rgba(0, 0, 0, 0);
           color: rgb(255, 255, 255);
         "
-        onclick="setstage();stop=false"
+        onclick="setstage();continueFlag=true;stop=false"
       >
         restart
       </button>
@@ -255,6 +255,7 @@
   </body>
   <script>
     "use strict";
+    var continueFlag=false
     var gameOver = async () => {
       hardStop = true;
       await new Promise((resolve) => {
@@ -302,6 +303,7 @@
     var stop;
     var fps = 20;
     async function main() {
+      continueFlag=false
       title.style.display = "none";
       reset();
       stop = false;
