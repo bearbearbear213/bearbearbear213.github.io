@@ -256,6 +256,7 @@
   <script>
     "use strict";
     var continueFlag=false
+    var EXstage=false
     var gameOver = async () => {
       hardStop = true;
       await new Promise((resolve) => {
@@ -1839,7 +1840,12 @@
 
             for (var n of entitys) {
               if (col(self, n) && n.id == "goal" && keyFlag) {
-                if(stagenumber==12){document.getElementById("clearM").innerHTML="GameClear"}
+                if(stagenumber==12){
+                  document.getElementById("clearM").innerHTML="GameClear"
+                  if(!continueFlag){
+                    document.getElementById("clearM").innerHTML="start<br/>EX mode"
+                  }
+                }
                 stagenumber++;
                 stageClear();
                 setTimeout(() => {
