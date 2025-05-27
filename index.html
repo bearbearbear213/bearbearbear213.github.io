@@ -154,6 +154,23 @@
       </button>
 
       <button
+        id="modeBtn"
+        style="
+          display:none;
+          touch-action: none;
+          -ms-touch-action: none;
+          position: absolute;
+          width: 20%;
+          height: 10%;
+          font-size: 5vh;
+          top: 55%;
+          left: 40%;
+        "
+        onclick="EXstage=!EXstage;document.getElementById('modeBtn').innerHTML=EXstage?'EX':'nomal'"
+      >
+        nomal
+      </button>
+      <button
         id="startBtn"
         style="
           touch-action: none;
@@ -1845,7 +1862,7 @@
                   document.getElementById("clearM").innerHTML="GameClear"
                   if(!continueFlag){
                     EXstage=true
-                    document.getElementById("startBtn").innerHTML="start<br/>EX mode"
+                    document.getElementById('modeBtn').style.display="none"
                   }
                 }
                 stagenumber++;
