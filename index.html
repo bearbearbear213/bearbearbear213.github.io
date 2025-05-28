@@ -627,9 +627,9 @@
   var h = 10;
   var y = 11;
   var o = 12;
-  var EXstage = true
+  var EXstage = false
   var boss = "boss";
-  var stagenumber = 7;
+  var stagenumber = 0;
   var stages = [
     [
       [g, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -2248,7 +2248,7 @@
     }
   };
   (() => {
-    main();
+   // main();
     setInterval(() => {
       if (document.getElementById("gameOver").style.display == "block") {
         if (keyboard.get().C) {
