@@ -375,17 +375,20 @@
         startP: [1 / 9999 ** 99999, 1 / 9999 ** 99999],
       };
       this.mouseposition = (e) => {
-        this.mouse.x =
-          this.mouse.endP[0] =
-          this.mouse.startP[0] =
-          (e.clientX / this.main.getBoundingClientRect().width) * 1.6 * 100;
-        this.mouse.y =
-          this.mouse.endP[1] =
-          this.mouse.startP[1] =
-          (e.clientY / this.main.getBoundingClientRect().height) * 100;
+        if (this.pId == e.pointerId) {
+          this.mouse.x =
+            this.mouse.endP[0] =
+            this.mouse.startP[0] =
+            (e.clientX / this.main.getBoundingClientRect().width) * 1.6 * 100;
+          this.mouse.y =
+            this.mouse.endP[1] =
+            this.mouse.startP[1] =
+            (e.clientY / this.main.getBoundingClientRect().height) * 100;
+        }
       };
+      this.pId
       this.another = () => { };
-      this.main.addEventListener("pointermove", this.mouseposition);
+      this.main.addEventListener("pointermove", (e) => { this.pId = e.pointerId; this.mouseposition(e) });
       this.main.addEventListener("pointerdown", this.mouseposition);
       this.main.addEventListener("pointerdown", () => {
         this.mouse.click = true;
@@ -624,9 +627,9 @@
   var h = 10;
   var y = 11;
   var o = 12;
-  var EXstage = false
+  var EXstage = true
   var boss = "boss";
-  var stagenumber = 0;
+  var stagenumber = 7;
   var stages = [
     [
       [g, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -1011,55 +1014,179 @@
       ),
     ];
     if (EXstage) {
-      if(stagenumber==0){
-          entitys.push(
-            bulletObject(
-              80,
-              10,
-              6,
-              8,
-              false,
-              1,
-              "rgb(200,0,0)",
-              "enemy",
-              false,
-              (self) => {
-                self.img = enemysImg[1];
-              },
-            ),
-          );
-          entitys.push(
-            bulletObject(
-              10,
-              40,
-              6,
-              8,
-              false,
-              1,
-              "rgb(200,0,0)",
-              "enemy",
-              false,
-              (self) => {
-                self.img = enemysImg[1];
-              },
-            ),
-          );
-          entitys.push(
-            bulletObject(
-              150,
-              10,
-              6,
-              8,
-              false,
-              1,
-              "rgb(200,0,0)",
-              "enemy",
-              false,
-              (self) => {
-                self.img = enemysImg[1];
-              },
-            ),
-          );
+      if (stagenumber == 6||stagenumber == 7) {
+        makeStage(
+          [
+            [b, e, b, e, b, e, b, e, b, e, b, e, b, e, b,],
+            [e, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [e, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [e, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, b, e, b, e, b, e, b, e, b,],
+          ],)
+      }
+
+      if (stagenumber == 5) {
+        makeStage(
+          [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, b, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+          ],)
+      }
+
+      if (stagenumber == 4) {
+        makeStage(
+          [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,],
+            [0, 0, 0, 0, 0, 0, b, 0, 0, 0, 0, 0, b, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,],
+            [0, 0, 0, 0, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+          ],)
+      }
+      if (stagenumber == 2 || stagenumber == 3) {
+        makeStage(
+          [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, c, 0, 0, 0, b],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, c, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, c, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, b, 0, e, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, b, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, b, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, e, e, e, b],
+          ],)
+      }
+      if (stagenumber == 1) {
+        entitys.push(
+          bulletObject(
+            10,
+            10,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            },
+          ),
+        );
+        entitys.push(
+          bulletObject(
+            150,
+            50,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            },
+          ),
+        );
+        entitys.push(
+          bulletObject(
+            100,
+            80,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            }
+          ),
+        );
+        entitys.push(
+          bulletObject(
+            150,
+            10,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            },
+          ),
+        );
+      }
+      if (stagenumber == 0) {
+        entitys.push(
+          bulletObject(
+            80,
+            10,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            },
+          ),
+        );
+        entitys.push(
+          bulletObject(
+            10,
+            40,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            },
+          ),
+        );
+        entitys.push(
+          bulletObject(
+            150,
+            10,
+            6,
+            8,
+            false,
+            1,
+            "rgb(200,0,0)",
+            "enemy",
+            false,
+            (self) => {
+              self.img = enemysImg[1];
+            },
+          ),
+        );
       }
       entitys.push(
         voidObject(0, 0, 0, 0, false, 1, "", "void", false, (self) => {
@@ -2056,7 +2183,7 @@
             }
             var ff = false;
             for (var n of entitys) {
-              if (col(n, a) && (n != a &&(n.id != "void"&&n.id != undefined))) {
+              if (col(n, a) && (n != a && (n.id != "void" && n.id != undefined))) {
                 ff = true;
               }
             }
