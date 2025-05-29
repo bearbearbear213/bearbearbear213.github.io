@@ -390,14 +390,14 @@
       this.another = () => { };
       this.main.addEventListener("pointermove", this.mouseposition);
       this.main.addEventListener("pointerdown", (e) => { if(this.mouse.click == false){this.pId = e.pointerId; this.mouseposition(e) }});
-      this.main.addEventListener("pointerdown", () => {
+      this.main.addEventListener("pointerdown", (e) => {
         this.mouse.click = true;
       });
-      this.main.addEventListener("pointerup", () => {
+      this.main.addEventListener("pointerup", (e) => {
         if (this.pId == e.pointerId) {
         this.mouse.click = false;}
       });
-      this.main.addEventListener("pointerleave", () => {
+      this.main.addEventListener("pointerleave", (e) => {
         if (this.pId == e.pointerId) {
         this.mouse.click = false;}
       });
