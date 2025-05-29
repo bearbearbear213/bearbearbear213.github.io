@@ -394,10 +394,12 @@
         this.mouse.click = true;
       });
       this.main.addEventListener("pointerup", () => {
-        this.mouse.click = false;
+        if (this.pId == e.pointerId) {
+        this.mouse.click = false;}
       });
       this.main.addEventListener("pointerleave", () => {
-        this.mouse.click = false;
+        if (this.pId == e.pointerId) {
+        this.mouse.click = false;}
       });
     }
     get() {
