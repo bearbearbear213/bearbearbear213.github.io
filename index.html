@@ -389,7 +389,7 @@
       this.pId
       this.another = () => { };
       this.main.addEventListener("pointermove", this.mouseposition);
-      this.main.addEventListener("pointerdown", (e) => { this.pId = e.pointerId; this.mouseposition(e) });
+      this.main.addEventListener("pointerdown", (e) => { if(this.mouse.click == false){this.pId = e.pointerId; this.mouseposition(e) }});
       this.main.addEventListener("pointerdown", () => {
         this.mouse.click = true;
       });
