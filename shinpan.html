@@ -520,7 +520,7 @@
               speakVoice(text)
               result.innerHTML = text
               time = 60 * timeList[(shortVar ? 1 : 0)][0]
-              team1Point = team2Point = 0
+              
               phase = 0
               coatChange = !coatChange
               await new Promise((resolve) => {
@@ -546,6 +546,7 @@
               ctx.fillText(team2Name, 1200, 200,800)
               ctx.fillText(team1Point, 400, 400,800)
               ctx.fillText(team2Point, 1200, 400,800)
+              team1Point = team2Point = 0
               /*
               for (var n of [0,1,2,3]) {
                 dummyC.putImageData(signImages[n], 0, 0)
