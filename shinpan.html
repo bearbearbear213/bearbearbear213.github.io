@@ -14,17 +14,17 @@
 </head>
 
 
-<body><canvas id="dummy" style="display:none;"width="1600"height="1000"></canvas>
+<body>
+  <div style="position: absolute;height: min(62.5vw,100vh); width: min(160vh,100vw);font-size: min(6.25vw,10vh);">
+  <canvas id="dummy" style="display:none;"width="1600"height="1000"></canvas>
   <div id="canvas" style="
         touch-action: none;
         -ms-touch-action: none;
-        width: 160vh;
-        height: 100vh;
+        height: 100%;width: 100%;
         position: absolute;
         top: 0%;
         left: 0%;
         background: rgb(0, 0, 0);
-        font-size: 10vh;
       ">
     <div id="sign" style="
       display: none;
@@ -105,7 +105,7 @@
           color: rgb(255, 255, 255);
           font-size: 300%;
         " onclick="
-        speakVoice(team1Name+'の得点')
+        speakVoice(((coatChange)?team2Name:team1Name)+'の得点')
         if(!coatChange)team1Point++
           else team2Point+=1">
       100
@@ -121,7 +121,7 @@
           color: rgb(255, 255, 255);
           font-size: 300%;
         " onclick="
-        speakVoice(team2Name+'の得点')
+        speakVoice(((coatChange)?team1Name:team2Name)+'の得点')
         if(coatChange)team1Point++
           else team2Point+=1">
       100
@@ -188,7 +188,9 @@
           left: 22.5%;
           color: rgb(255, 255, 255);
           font-size: 70%;
-        " onclick="coatChange=!coatChange">
+        " onclick="coatChange=!coatChange;
+        var [a,b]=[team1Name,team2Name];
+        [team2Name,team1Name]=[a,b]">
       前半
     </div>
 
@@ -357,33 +359,32 @@
         display: none;
         touch-action: none;
         -ms-touch-action: none;
-        width: 160vh;
-        height: 100vh;
+        height: 100%;width: 100%;
         position: absolute;
         top: 0%;
         left: 0%;
         background: rgb(0, 0, 0);
-        font-size: 10vh;
+        font-size: 100%;
         color: rgb(255, 255, 255);
       ">
-    team1-name:<input id="settingTeam1Name" value="チーム1" /><br />
-    team2-name:<input id="settingTeam2Name" value="チーム2" /><br />
-    <button id="settingFightTime" style="height:2em;width:10em;"
+    team1-name:<input style="font-size: 100%;height:8%;width:30%;"id="settingTeam1Name" value="チーム1" /><br />
+    team2-name:<input style="font-size: 100%;height:8%;width:30%;"id="settingTeam2Name" value="チーム2" /><br />
+    <button style="font-size: 50%;height:8%;width:30%;"id="settingFightTime" style="height:2em;width:10em;"
       onclick="shortVar=!shortVar">long-version</button><br />
   </div>
   <div style="
         text-align: center;
         background: rgb(100, 100, 100);
-        width: 48vh;
-        height: 15vh;
+        width: 30%;
+        height: 15%;
         position: absolute;
-        top: 80vh;
-        left: 104vh;
+        top: 80%;
+        left: 65%;
         color: rgb(255, 255, 255);
-        font-size: 10vh;
+        font-size: 120%;
       " onclick="openningSetting=!openningSetting">
     setting
-  </div>
+  </div></div>
   <script>          
     var signImages = new Array()
     var signAll = document.getElementById("sign")
@@ -630,5 +631,3 @@
 
 
 </html>
-
-
