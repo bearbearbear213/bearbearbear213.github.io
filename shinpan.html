@@ -1,0 +1,640 @@
+
+<html>
+
+<head>
+    <style>
+        #main {
+            background: red;
+            position: absolute;
+            height: calc(min(100vh, 100*100vw/160));
+            width: calc(min(100vh*1.6, 100vw));
+            top: calc((100vh - min(100vh, 100*100vw/160))/2);
+            left: calc((100vw - min(100vh*1.6, 100vw))/2);
+            user-select: none;
+            touch-action: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <canvas id="canvas" width="1600" height="1000" style="position:absolute;width:100%;height:100%;"></canvas>
+        <div id="setting" style="position:absolute;display:none;height:100%;width:100%;background:rgba(0,0,0,0)">
+            <textarea id="setText" style="resize: both;
+            position:absolute;
+            top:0;
+            left:0;
+            width:95%;
+            height:45%;
+            ">
+{
+    team1Name:"team1",//チームのうち、片方を""の中に入力
+    team2Name:"team2",//もう片方を入力
+    wait:0.5,//ロボット復帰の時間(分)
+    first:5,//前半の時間
+    break:2.5,//休憩の時間
+    latter:5//後半の時間
+}
+        </textarea>
+        <button style="
+        position:absolute;top:60%"
+        onclick="datas.timer=0">skip</button>
+        <div style="position:absolute;top:70%;">
+          <input id="addTime"><button
+          onclick="
+          datas.timer+=Number(addTime.value)*1000
+          ">add time</button>
+        </div>
+            <button style="
+            position:absolute;
+            top:50%;
+            "
+            onclick="
+          var k=setText.value
+          k=Function('return'+k)()
+          waitTime=k.wait*60*1000
+          fTimes=[k.first,k.break,k.latter]
+          datas.Aname=k.team1Name
+          datas.Bname=k.team2Name
+        ">反映</button>
+        </div>
+    </div>
+    <div id="title" style="position: absolute;
+    height: 100%;
+    width: 100%;
+    background:rgb(0,0,0);
+    color:white;
+    top: 0;
+    left:0" onclick="
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+        // iOS対策: 空の音声で一度オーディオコンテキストをアンロックする
+        const dummyUttr = new SpeechSynthesisUtterance('');
+        dummyUttr.lang = 'ja-JP';
+        dummyUttr.volume = 0; // 無音
+        window.speechSynthesis.speak(dummyUttr);
+    this.style.display='none'">
+        please touch</div>
+</body>
+<script>
+    var speakT = (text = "こんにちは、音声合成のテストです。") => {
+        const uttr = new SpeechSynthesisUtterance(text);
+        uttr.lang = 'ja-JP'
+        window.speechSynthesis.speak(uttr);
+    }
+    // 1. AudioContextの作成（この時点では suspended 状態になる可能性あり）
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+/**
+ * 指定した周波数と長さでSin波を鳴らす関数
+ * @param {number} frequency - 周波数 (Hz) 例: 440
+ * @param {number} duration - 再生時間 (秒) 例: 1
+ */
+function pSin(frequency = 440, duration = 0.5) {
+  // オシレーター（発振器）とゲイン（音量調整）の作成
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  // 接続: oscillator -> gainNode -> スピーカー
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  // 設定
+  oscillator.type = 'sine'; // Sin波を指定
+  oscillator.frequency.value = frequency; // 周波数
+
+  // プツプツ音（クリックノイズ）を防ぐための音量フェードアウト
+  const now = audioCtx.currentTime;
+  gainNode.gain.setValueAtTime(0.3, now); // 初期音量
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration); // 徐々に消音
+
+  // 再生開始と停止のスケジュール
+  oscillator.start(now);
+  oscillator.stop(now + duration);
+}
+
+    var range = (n) => [...Array(n).keys()];
+    var view = document.getElementById("main")
+    var ok = console.log
+
+
+    var mouse = {
+        x: 0, y: 0, iclick: false, clicking: false, clendi: false, get clend() {
+            var n = this.clendi
+            this.clendi = false
+            return n
+        }, id: null, get click() {
+            var n = this.iclick
+            this.iclick = false
+            return n
+        }
+    }
+    view.addEventListener("pointerdown", (e) => {
+        if (mouse.id != null) return
+        mouse.id = e.pointerId
+        mouse.iclick = true
+        mouse.clicking = true
+        var d = view.getBoundingClientRect()
+        var x = (d.x - e.clientX) / (d.left - d.right)
+        var y = (d.y - e.clientY) / (d.bottom - d.top)
+        mouse.x = (x * 160)
+        mouse.y = - (y * 100)
+    })
+    view.addEventListener("pointermove", (e) => {
+        if (mouse.id != e.pointerId) return
+        mouse.iclick = false
+        var d = view.getBoundingClientRect()
+        var x = (d.x - e.clientX) / (d.left - d.right)
+        var y = (d.y - e.clientY) / (d.bottom - d.top)
+        mouse.x = (x * 160)
+        mouse.y = -(y * 100)
+    })
+    view.addEventListener("mousemove", (e) => {
+        if (mouse.id != e.pointerId) return
+        mouse.iclick = false
+        var d = view.getBoundingClientRect()
+        var x = (d.x - e.clientX) / (d.left - d.right)
+        var y = (d.y - e.clientY) / (d.bottom - d.top)
+        mouse.x = (x * 160)
+        mouse.y = -(y * 100)
+    })
+    window.addEventListener("pointercancel", (e) => {
+        if (mouse.id != e.pointerId) return
+        mouse.iclick = false
+        mouse.clicking = false
+        mouse.id = null
+        mouse.clendi = true
+    })
+    window.addEventListener("pointerup", (e) => {
+        if (mouse.id != e.pointerId) return
+        mouse.iclick = false
+        mouse.clicking = false
+        mouse.id = null
+        mouse.clendi = true
+    })
+    var ctx = document.getElementById("canvas").getContext("2d")
+    var fill = (q) => {
+        if (typeof q == "function") {
+            q()
+        } else {
+            var p = [...q]
+            p = p.map(e => e.map(k => k * 10))
+            ctx.beginPath();
+            ctx.moveTo(...p.shift());
+            for (var n of p) {
+                ctx.lineTo(...n)
+            }
+        }
+        ctx.fill();
+        ctx.stroke();
+    }
+    var setStyle = (fi = "rgba(0,0,0,0)", st = "rgba(0,0,0,0)", lineW = 1) => {
+        ctx.fillStyle = fi
+        ctx.strokeStyle = st
+        ctx.lineWidth = lineW * 10
+    }
+    var rgb = (a, b, c) => `rgb(${a},${b},${c})`
+    var rgba = (a, b, c, d) => `rgba(${a},${b},${c},${d})`
+    var text = (x, y, textContent, si = 10, w = null, mode = 'wrap', minSi = 3) => {
+        const str = `${textContent}`;
+        const startX = x * 10;
+        let currentY = y * 10;
+        const maxWidth = w ? w * 10 : Infinity;
+
+        let currentFontSize = si * 10;
+        const minFontSize = minSi * 10;
+        const paragraphs = str.split('\n');
+
+        // --------------------------------------------------
+        // 1. 'shrink' または 'auto' の場合：フォントサイズの縮小計算
+        // --------------------------------------------------
+        if (w && (mode === 'shrink' || mode === 'auto')) {
+            while (currentFontSize > minFontSize) {
+                ctx.font = `${currentFontSize}px serif`;
+                let isOverflow = false;
+
+                for (const paragraph of paragraphs) {
+                    // shrinkモード：1行全体の長さをチェック
+                    if (mode === 'shrink') {
+                        if (ctx.measureText(paragraph).width > maxWidth) {
+                            isOverflow = true;
+                            break;
+                        }
+                    }
+                    // autoモード：改行を考慮しつつ単語・文字レベルでの溢れをチェック
+                    else if (mode === 'auto') {
+                        const chars = Array.from(paragraph);
+                        let currentLine = "";
+                        for (let i = 0; i < chars.length; i++) {
+                            const testLine = currentLine + chars[i];
+                            if (ctx.measureText(testLine).width > maxWidth && currentLine.length > 0) {
+                                isOverflow = true;
+                                break;
+                            }
+                            currentLine = testLine;
+                        }
+                        if (isOverflow) break;
+                    }
+                }
+
+                if (isOverflow) {
+                    currentFontSize--;
+                } else {
+                    break; // 収まったらループを抜ける
+                }
+            }
+        }
+
+        // --------------------------------------------------
+        // 2. 決定したサイズとスタイルの適用
+        // --------------------------------------------------
+        const lineHeight = currentFontSize * 1.2;
+        ctx.font = `${currentFontSize}px serif`;
+        ctx.textBaseline = "top";
+
+        // --------------------------------------------------
+        // 3. 描画処理
+        // --------------------------------------------------
+        for (let p = 0; p < paragraphs.length; p++) {
+            const paragraph = paragraphs[p];
+
+            if (paragraph === "") {
+                currentY += lineHeight;
+                continue;
+            }
+
+            // 'shrink' モード：折り返さずにそのまま描画
+            if (mode === 'shrink') {
+                ctx.strokeText(paragraph, startX, currentY);
+                ctx.fillText(paragraph, startX, currentY);
+                currentY += lineHeight;
+                continue;
+            }
+
+            // 'wrap' または 'auto' モード：最大幅での折り返し処理
+            const chars = Array.from(paragraph);
+            let currentLine = "";
+
+            for (let i = 0; i < chars.length; i++) {
+                const testLine = currentLine + chars[i];
+                const metrics = ctx.measureText(testLine);
+
+                if (metrics.width > maxWidth && i > 0) {
+                    ctx.strokeText(currentLine, startX, currentY);
+                    ctx.fillText(currentLine, startX, currentY);
+
+                    currentLine = chars[i];
+                    currentY += lineHeight;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+
+            if (currentLine.length > 0) {
+                ctx.strokeText(currentLine, startX, currentY);
+                ctx.fillText(currentLine, startX, currentY);
+            }
+
+            if (p < paragraphs.length - 1) {
+                currentY += lineHeight;
+            }
+        }
+    };
+    var box = (x, y, w, h, angle = 0, origin = null) => {
+        var ox = origin ? origin[0] : (x + w / 2);
+        var oy = origin ? origin[1] : (y + h / 2);
+        var srad = () => {
+            const points = [
+                [x - ox, y - oy],
+                [x - ox, y + h - oy],
+                [x + w - ox, y + h - oy],
+                [x + w - ox, y - oy],
+                [x - ox, y - oy],
+            ];
+            const rad = (angle * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            var k = points.map(([px, py]) => {
+                const rx = px * cos - py * sin;
+                const ry = px * sin + py * cos;
+                return [ox + rx, oy + ry];
+            });
+            return k
+        }
+        var k = srad()
+        // 点 (px, py) との当たり判定関数
+        var col = (px, py) => {
+            const rad = (angle * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            // 1. 回転中心 (ox, oy) を基準に、判定したい点を平行移動
+            const dx = px - ox;
+            const dy = py - oy;
+
+            // 2. 逆回転（-angle）させて、回転前の座標系に戻す
+            // cos(-rad) = cos(rad), sin(-rad) = -sin(rad) を利用
+            const rx = dx * cos + dy * sin;
+            const ry = -dx * sin + dy * cos;
+
+            // 3. 回転前のローカル座標 (ox + rx, oy + ry) が、元の長方形内にあるか判定
+            const worldX = ox + rx;
+            const worldY = oy + ry;
+
+            return (
+                worldX >= x &&
+                worldX <= x + w &&
+                worldY >= y &&
+                worldY <= y + h
+            );
+        };
+        return {
+            mat: k, col: col,
+            set angle(a) {
+                angle += a
+                this.mat = srad()
+            }, set abAngle(a) {
+                angle = a
+                this.mat = srad()
+            },
+            set move(m) {
+                x += m[0]
+                y += m[1]
+                ox += m[0]
+                oy += m[1]
+                this.mat = srad()
+            }, set abMove(m) {
+                var dx = m[0] - x,
+                    dy = m[1] - y
+                x += dx
+                y += dy
+                ox += dx
+                oy += dy
+                this.mat = srad()
+            },
+        }
+    };
+
+    var arc = (x, y, r, a = 360, s = 0) => {
+        return {
+            mat: () => {
+                ctx.beginPath();
+                ctx.moveTo(x * 10, y * 10)
+                ctx.arc(x * 10, y * 10, r * 10,
+                    s * Math.PI * 2 / 360,
+                    s * Math.PI * 2 / 360 + a * Math.PI * 2 / 360);
+            }, col: (px, py) => {
+                var dis = Math.sqrt(
+                    (x - px) ** 2 + (y - py) ** 2
+                )
+                var dx = px - x
+                var dy = py - y
+                var i = ((-(Math.atan2(dx, dy) * 360 / 2 / Math.PI - 180) - 90 + 360 * 80) % 360)
+                return (a == 360 || (s % 360 < i && i < (s + a) % 360)) && dis < r
+            }, set angle(i) {
+                s += i
+            }, set abAngle(i) {
+                s = i
+            }, set move(m) {
+                x += m[0]
+                y += m[1]
+            }, set abMove(m) {
+                x = m[0]
+                y = m[1]
+            }, set changeSize(m) {
+                a += m
+            }, set abChangeSize(m) {
+                a = m
+            }
+        }
+    }
+
+
+    var bTime = Date.now()
+    setInterval(() => {
+        var dt = (Date.now() - bTime)
+        bTime = Date.now()
+        setStyle(rgb(0, 0, 0), rgb(0, 0, 0))
+        fill([[0, 0], [160, 0], [160, 100], [0, 100]])
+        setStyle(rgb(255, 0, 0), rgb(0, 0, 0))
+
+        update(dt)
+    })
+
+    var cortAngle = false
+    var stop = false
+    var settingTime = false
+    var settingDom = document.getElementById("setting")
+    var lName = box(2, 2, 42, 15),
+        rName = box(80, 2, 42, 15),
+        mainTimer = box(46, 4, 32, 11),
+        lBord = box(2, 21, 58, 58),
+        rBord = box(64, 21, 58, 58),
+        lScDe = box(2, 84, 40, 15),
+        rScDe = box(82, 84, 40, 15),
+        fName = box(44, 84, 36, 7),
+        start = box(44, 92, 36, 7),
+        rob1 = box(128, 2, 30, 15),
+        rob2 = box(128, 19, 30, 15),
+        rob3 = box(128, 36, 30, 15),
+        rob4 = box(128, 53, 30, 15),
+        restart = box(128, 70, 30, 8),
+        setting = arc(145, 90, 9)
+    var senkou=true
+    var update = (dt) => {
+        setStyle(rgb(255, 255, 255))
+        fill(setting.mat)
+        if (settingTime) {
+            if (mouse.clend) {
+                if (setting.col(mouse.x, mouse.y)) {
+                    settingTime = false
+                    settingDom.style.display = "none"
+                }
+            }
+            return
+        }
+        if (mouse.clend) {
+            if(lName.col(mouse.x,mouse.y)){
+              senkou=true
+            }else if(rName.col(mouse.x,mouse.y)){
+              senkou=false
+            }
+            if (setting.col(mouse.x, mouse.y)) {
+                settingTime = true
+                settingDom.style.display = "block"
+            }
+            if (lBord.col(mouse.x, mouse.y)) {
+                datas.Asc++
+                pSin(440,1)
+                //speakT(datas.Aname + "の得点")
+            } else if (rBord.col(mouse.x, mouse.y)) {
+                datas.Bsc++
+                pSin(440,1)
+                //speakT(datas.Bname + "の得点")
+            } else if (lScDe.col(mouse.x, mouse.y)) {
+                datas.Asc--
+            } else if (rScDe.col(mouse.x, mouse.y)) {
+                datas.Bsc--
+            } else if (start.col(mouse.x, mouse.y)) {
+                if (datas.phase == "undefined") {
+                    datas.phase = phaseName[0]
+                } else {
+                    datas.phase = "undefined"
+                }
+                datas.timer = fTimes[0] * 60 * 1000
+                datas.Asc = 0
+                datas.Bsc = 0
+            } else if (fName.col(mouse.x, mouse.y)) {
+                cortAngle = !cortAngle
+            } else if (mainTimer.col(mouse.x, mouse.y)) {
+                stop = !stop
+            } else if (rob1.col(mouse.x, mouse.y)) {
+                datas.rob1T = waitTime
+            } else if (rob2.col(mouse.x, mouse.y)) {
+                datas.rob2T = waitTime
+            } else if (rob3.col(mouse.x, mouse.y)) {
+                datas.rob3T = waitTime
+            } else if (rob4.col(mouse.x, mouse.y)) {
+                datas.rob4T = waitTime
+            } else if (restart.col(mouse.x, mouse.y)) {
+                datas.rob1T = datas.rob2T = datas.rob3T = datas.rob4T = null
+            }
+        }
+        if(datas.phase!="undefined"&&!stop)datas.timer-=dt
+        setStyle(rgb(255, 255, 0))
+        setStyle(cortAngle ? rgb(255, 255, 0) : rgb(0, 0, 255),
+        senkou?rgb(255,0,0):rgba(0,0,0,0))
+        fill(lName.mat)//lName
+        setStyle(!cortAngle ? rgb(255, 255, 0) : rgb(0, 0, 255),
+        !senkou?rgb(255,0,0):rgba(0,0,0,0))
+        fill(rName.mat)//rName
+        setStyle(rgb(0, 0, 0), rgb(255, 0, 0), 0)
+        fill(mainTimer.mat)//mainTimer
+        setStyle(rgb(100, 100, 100))
+        fill(lBord.mat)//lBord
+        fill(rBord.mat)//rBord
+
+        fill(lScDe.mat)//lScDe
+        fill(rScDe.mat)//rScDe
+
+        fill(restart.mat)
+        setStyle(rgb(255, 0, 0))
+        fill(fName.mat)//fName
+        fill(start.mat)//start
+
+        setStyle(rgb(255, 0, 0))
+        fill(rob1.mat)//rob1
+        setStyle(rgb(100, 255, 100))
+        fill(rob2.mat)//rob2
+        setStyle(rgb(0, 0, 255))
+        fill(rob3.mat)//rob3
+        setStyle(rgb(255, 0, 255))
+        fill(rob4.mat)//rob4
+
+        setStyle(rgb(255, 255, 255))
+        text(2, 80, "<<<", 20)
+        text(82, 80, "<<<", 20)
+
+        text(2, 20, datas.Asc, 60, 50, "shrink")
+        text(64, 20, datas.Bsc, 60, 50, "shrink")
+
+        text(53, 90, datas.phase == "undefined" ? " start " : "finish", 10, 18, "shrink")
+        text(49, 84, datas.phase, 10, 25, "shrink")
+
+        var t = (datas.timer - (datas.timer % 1000)) / 1000
+        var w = t - (t % 60)
+        var s = (t - w)
+        w = w / 60 + ""
+        s = s + ""
+        text(50, 4, (w.length == 1 ? "0" : "") + w + ":" + (s.length == 1 ? "0" : "") + s)
+        setStyle(cortAngle ? rgb(0, 0, 0) : rgb(255, 255, 255))
+        text(2, 2, datas.Aname+(datas.Aname.length>4?"":(range(4-datas.Aname.length).map(()=> "　").join(""))), 50, 42, "shrink")
+        setStyle(!cortAngle ? rgb(0, 0, 0) : rgb(255, 255, 255))
+        text(80, 2, datas.Bname+(datas.Bname.length>4?"":(range(4-datas.Bname.length).map(()=> "　").join(""))), 50, 42, "shrink")
+
+        setStyle(rgb(255, 255, 255))
+        if (datas.rob1T != null) {
+            if ((datas.phase != "undefined" && !stop)||(datas.phase=="undefined")) datas.rob1T -= dt
+            var n = datas.rob1T
+            if(n+dt>0 && n<=0){speakT("ロボット1復帰");pSin(440,1)}
+            n = Math.round((n - (n % 1000)) / 1000)
+            text(128, 2, n <= 0 ? "finish" : n)
+        }
+        if (datas.rob2T != null) {
+            if ((datas.phase != "undefined" && !stop)||(datas.phase=="undefined")) datas.rob2T -= dt
+            var n = datas.rob2T
+            if(n+dt>0 && n<=0){speakT("ロボット2復帰");pSin(440,1)}
+            n = Math.round((n - (n % 1000)) / 1000)
+            text(128, 19, n <= 0 ? "finish" : n)
+        }
+        if (datas.rob3T != null) {
+            if ((datas.phase != "undefined" && !stop)||(datas.phase=="undefined")) datas.rob3T -= dt
+            var n = datas.rob3T
+            if(n+dt>0 && n<=0){speakT("ロボット3復帰");pSin(440,1)}
+            n = Math.round((n - (n % 1000)) / 1000)
+            text(128, 36, n <= 0 ? "finish" : n)
+        }
+        if (datas.rob4T != null) {
+            if ((datas.phase != "undefined" && !stop)||(datas.phase=="undefined")) datas.rob4T -= dt
+            var n = datas.rob4T
+            if(n+dt>0 && n<=0){speakT("ロボット4復帰");psin(440,1)}
+            n = Math.round((n - (n % 1000)) / 1000)
+            text(128, 53, n <= 0 ? "finish" : n)
+        }
+
+        text(128, 70, "restart", 6)
+
+        setStyle(rgb(0,0,0))
+        text(140,85,"設定",5)
+
+        //if (datas.phase != "undefined" && !stop) datas.timer -= dt
+        if (datas.timer <= 0 && datas.phase != "undefined") {
+            var n = phaseName.indexOf(datas.phase)
+
+            pSin(440,1)
+            speakT("終了です")
+            if (n != phaseName.length - 1) {
+                n++
+                datas.timer = fTimes[n] * 1000 * 60
+                datas.phase = phaseName[n]
+                if (datas.phase == "break time") {
+                    var n = datas.Aname, m = datas.Bname
+                    datas.Aname = m
+                    datas.Bname = n
+                    n = datas.Asc
+                    m = datas.Bsc
+                    datas.Bsc = n
+                    datas.Asc = m
+                }
+            } else {
+                datas.phase = "undefined"
+            }
+        }
+        if(datas.timer+dt>1000*60&&datas.timer<=1000*60){
+            speakT("のこり一分")
+        }
+        if(datas.timer+dt>1000*30&&datas.timer<=1000*30){
+            speakT("のこり30秒")
+        }
+        if(datas.timer+dt>1000*10&&datas.timer<=1000*10){
+            speakT("のこり10秒")
+        }
+    }
+    var waitTime = 2 * 1000
+    var fTimes = [5, 2.5, 5]
+    var phaseName = ["first half", "break time", "latter half"]
+    var datas = {
+        Aname: "チーム1",
+        Bname: "TEAM2team2",
+        Asc: 0,
+        Bsc: 0,
+        rob1T: null,
+        rob2T: null,
+        rob3T: null,
+        rob4T: null,
+        timer: fTimes[0] * 60 * 1000,
+        phase: "undefined"
+    }
+</script>
+
+</html>
