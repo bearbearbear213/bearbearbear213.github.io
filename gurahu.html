@@ -1,0 +1,420 @@
+<html>
+
+<head>
+    <style>
+        * {
+            font-size: calc(min(1vh, 1vw)*3);
+        }
+
+        iframe {
+            width: 50vw;
+            height: 25vw;
+        }
+
+        canvas {
+            width: 10em;
+            height: 10em;
+        }
+
+        body {
+            background: green
+        }
+
+        textarea {
+            white-space: pre;
+            overflow-x: scroll;
+            overflow-y: auto;
+        }
+
+        #text {
+            left: 10em;
+            height: 8em;
+        }
+
+        #set {
+            top: 20em;
+            left: 10em;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canv" width="320" height="320"></canvas>
+    <div id="player"></div>
+    <button onclick="youD=!youD
+    this.style.background=youD?'red':'white'">同期</button><input id="youUrl"value="js711BTpRQk" oninput="
+                                               player.loadVideoById(this.value)">
+    <br>t=<div id="counter">0</div><br>
+    <div id="sikilist" style="
+      height:20vh;
+      overflow: scroll;
+    ">
+    <div class="block"><br><div style="width:100%;height:5px;background-color: white;"onclick="if(changingDom!=undefined){document.getElementById('sikilist').insertBefore(changingDom,this.parentNode)}"></div><textarea class="siki" value="">return x-y+t-30</textarea><select class="sikitype">
+            <option value="==0">==0</option>
+            <option value=">=0">&gt;=0</option>
+            <option value="<=0">&lt;=0</option>
+            <option value=">0">&gt;0</option>
+            <option value="<0">&lt;0</option>
+        </select>rough<input class="sikirough" value="5" style="width:3em;">
+        ,color<input class="sikibrig" style="width:5em;" value="rgb(255*t/60,0,0)">
+        ,track<input class="trackNum" style="width:5em;" value="1">
+        <button onclick="changingDom=this.parentNode">場所の挿入</button>
+        <button onclick="sikilist.append(this.parentNode)">最後に挿入</button>
+    </div>
+    </div><button
+        onclick='adNode()'>add</button><br>
+    <button id="set" onclick="
+    var l=[]
+    var s1=document.getElementsByClassName('siki')
+    var s2=document.getElementsByClassName('sikitype')
+      var j=(n)=>{
+        var r=new Function('x','y',s1[n].value)
+        var s=new Function('m','return m'+s2[n].value)
+        l.push((x,y)=>s(Math.round(r(x,y))))
+      }
+    for(var n=0;n!=s1.length;n++){
+      j(n)
+    }
+    roughList=[]
+    for(var n of document.getElementsByClassName('sikirough')){
+        roughList.push(new Function('return '+n.value))
+    }
+    brigList=[]
+    for(var n of document.getElementsByClassName('sikibrig')){
+        brigList.push(new Function('x','y','return '+n.value))
+    }
+    funcList=l
+    trackList=[]
+    for(var n of document.getElementsByClassName('trackNum')){
+        trackList.push(Number(n.value))
+    }
+    bitdata=kon()
+    t=0
+  ">start</button><br>
+    トラックごとのtの範囲0~:<input id="savetime" style="width:50%;" value="60,30"><br>
+    <button onclick="
+    //downloadFile(kon().toString(),'bitdata.txt','text/plain')
+    //ok(kon())
+    //ok(generateHexFile([].concat(...[].concat(...kon())).map(n=>n.toString(16))))
+    var k=([].concat(...[].concat(...kon())).map(n=>{var k= n.toString(16)
+        if(k.length==1)k='0'+k
+        return k
+    }).join(' '))
+    ok(k)
+    downloadFile(k,'bitdata.txt','text/plain')">save bitdata</button><button onclick="saveData()">save
+        sikiDatas</button><input type="file" onchange="loadsiki(this.files[0])">
+    <input id="cSize"value="32*32"oninput="
+        k=this.value.split('*')
+        cW=Number(k[0])
+        cH=Number(k[1])
+        canvSet()
+        ">
+</body>
+<script>
+    var adNode=()=>{
+    document.getElementById("sikilist").insertAdjacentHTML("beforeend",`<div class="block"><br><div style="width:100%;height:5px;background-color: white;"onclick="if(changingDom!=undefined){document.getElementById('sikilist').insertBefore(changingDom,this.parentNode)}"></div><textarea class="siki"></textarea><select class="sikitype"><option value="==0">==0</option><option value=">=0">&gt;=0</option><option value="<=0">&lt;=0</option><option value=">0">&gt;0</option><option value="<0">&lt;0</option></select>rough<input class="sikirough"value="5"min="1"style="width:3em;">,color<input class="sikibrig" style="width:5em;" value="255">,track<input class="trackNum" style="width:5em;" value="1"><button onclick="changingDom=this.parentNode">場所の挿入</button><button onclick="sikilist.append(this.parentNode)">最後に挿入</button></div>`)}
+    //
+    var changingDom;
+    var youD = false
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    var player;
+    var plSet = (id = "ovXphxTaYOg") => {
+
+        // 3. This function creates an <iframe> (and YouTube player)
+        //    after the API code downloads.
+
+
+        player = new YT.Player('player', {
+            height: '390',
+            width: '640',
+            videoId: id,
+            playerVars: {
+                'playsinline': 1
+            },
+            events: {
+            }
+        });
+    }
+    function onYouTubeIframeAPIReady() { plSet() }
+    var trackList = []
+    function generateHexFile(dataArray) {
+        let hexLines = [];
+        let currentAddress = 0x0000; // 開始アドレス
+        const maxBytesPerLine = 16;  // 1行あたりの最大データ数（一般的には16バイト）
+
+        for (let i = 0; i < dataArray.length; i += maxBytesPerLine) {
+            // 1行分のデータを切り出す
+            const chunk = dataArray.slice(i, i + maxBytesPerLine);
+
+            const byteCount = chunk.length;
+            const recordType = 0x00; // データレコード
+
+            // 1. 各フィールドを2桁または4桁の16進数文字列に変換
+            const byteCountHex = byteCount.toString(16).padStart(2, '0').toUpperCase();
+            const addressHex = currentAddress.toString(16).padStart(4, '0').toUpperCase();
+            const recordTypeHex = recordType.toString(16).padStart(2, '0').toUpperCase();
+
+            // データの16進数化
+            const dataHex = chunk.map(b => b.toString(16).padStart(2, '0').toUpperCase()).join('');
+
+            // 2. チェックサムの計算（コロン以外の合計値の2の補数）
+            let sum = byteCount + ((currentAddress >> 8) & 0xFF) + (currentAddress & 0xFF) + recordType;
+            for (let b of chunk) {
+                sum += b;
+            }
+            const checksum = (parseInt('100', 16) - (sum & 0xFF)) & 0xFF;
+            const checksumHex = checksum.toString(16).padStart(2, '0').toUpperCase();
+
+            // 3. レコードの結合
+            hexLines.push(`:${byteCountHex}${addressHex}${recordTypeHex}${dataHex}${checksumHex}`);
+
+            // 次の行へ向けてアドレスを進める
+            currentAddress += byteCount;
+        }
+
+        // 4. 終了レコードを追加
+        hexLines.push(":00000001FF");
+
+        // 改行で連結してテキストを返す
+        return hexLines.join('\n');
+    }
+
+    var freeVariable = {}
+    var datatosave = () => {
+        var t = {}
+        t.size=[cW,cH]
+        t.func=[]
+      t.url=document.getElementById("youUrl").value
+        t.time=document.getElementById("savetime").value
+        for (var n of document.getElementsByClassName('siki')) {
+            t.func.push({siki:n.value})
+        }
+      var k=0
+        for (var n of document.getElementsByClassName('sikitype')) {
+            t.func[k].type=(n.value)
+            k++
+        }
+      k=0
+        for (var n of document.getElementsByClassName('sikirough')) {
+            t.func[k].rough=(n.value)
+          k++
+        }
+      k=0
+        for (var n of document.getElementsByClassName('sikibrig')) {
+            t.func[k].bri=(n.value)
+          k++
+        }
+      k=0
+        for (var n of document.getElementsByClassName('trackNum')) {
+            t.func[k].tra=(n.value)
+          k++
+        }
+      t=JSON.stringify(t)
+      //ok(t)
+        return t
+    }
+    var saveData = () => {
+        datatosave()
+        downloadFile(datatosave(), 'siki.txt', 'text/plain')
+    }
+    loadsiki = (t) => {
+        if (!t) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            var k = e.target.result
+            ok(k)
+            k =  JSON.parse(k)
+          var u=document.getElementById("youUrl")
+          u.value=k.url
+          u.oninput()
+            var s=document.getElementById("cSize")
+            s.value=`${k.size[0]}*${k.size[1]}`
+            s.oninput()
+            document.getElementById("savetime").value = k.time
+            var d = document.getElementById("sikilist")
+            d.innerHTML = ""
+            for (var n of range(k.func.length)) {
+                adNode()
+            }var m=0
+            for (var n of document.getElementsByClassName('siki')) {
+                n.value = k.func[m].siki
+              m++
+            }m=0
+            for (var n of document.getElementsByClassName('sikitype')) {
+                n.value = k.func[m].type
+              m++
+            }m=0
+            for (var n of document.getElementsByClassName('sikirough')) {
+                n.value = k.func[m].rough
+              m++
+            }m=0
+            for (var n of document.getElementsByClassName('sikibrig')) {
+                n.value = k.func[m].bri
+              m++
+            }m=0
+            for (var n of document.getElementsByClassName('trackNum')) {
+                n.value = k.func[m].tra
+              m++
+            }
+        };
+        reader.readAsText(t);
+    }
+    var ctx = document.getElementById("canv").getContext("2d")
+    var ok = console.log
+    var late = 10
+    var cW = 32, cH = 32
+    var canvSet;
+    {
+        var c = document.getElementById("canv")
+        c.addEventListener("pointerdown", (e) => {
+            var d = c.getBoundingClientRect()
+            var x = cW * (d.x - e.clientX) / (d.left - d.right)
+            var y = -cH * (d.y - e.clientY) / (d.bottom - d.top)
+            ok(
+                bitdata[t - 1][31 - Math.round(y)][Math.round(x)].toString(16).padStart(6, "0")
+            )
+        })
+        canvSet = () => {
+            c.width = cW * late
+            c.height = cH * late
+            c.style.width = "10em"
+            c.style.height = `${10 * cH / cW}em`
+        }
+        canvSet()
+    }
+
+    var t = 0
+
+
+    var fillRect = (x, y, w, h) => ctx.fillRect(x * late, (cH - y) * late, w * late, -h * late)
+    var funcList = []
+    var roughList = []
+    var brigList = []
+
+    var bitdata = []
+
+    var f = 0
+    ctx.fillStyle = "black"
+    ctx.fillRect(0, 0, cW * late, cH * late)
+
+    setInterval(() => {
+        //ok(player?player.getCurrentTime():0)
+        if (youD) {
+            t = Math.round(player.getCurrentTime() * 60)
+        }
+        var k = 0
+        var t1 = t
+        var d = document.getElementById("savetime").value.split(",").map(Number)
+        while (t1 > 0) {
+            t1 -= d[k]
+            k++
+            if (k == d.length) break
+        }
+        t1 += d[k - 1] - k
+        document.getElementById("counter").innerHTML = t1
+        if (t < bitdata.length) {
+            ctx.fillStyle = "black"
+            ctx.fillRect(0, 0, cW * late, cH * late)
+            var k = bitdata[t]
+            for (var x = 0; x != cW; x++) {
+                for (var y = 0; y != cH; y++) {
+                    var l = k[y][x]
+                    var c = (l).toString(16);
+                    c = `${c}`.padStart(6, "0")
+                    ctx.fillStyle = `#${c}`
+                    fillRect(x, y, 1, 1)
+                }
+            }
+            t++
+        }
+
+    }, 13)
+    var range = (n) => [...Array(n).keys()];
+    var kon = () => {
+        var list = []
+        var l = 0
+        for (var i of document.getElementById("savetime").value.split(","))
+            for (var l1 = 0; l1 <= Number(i); l1++) {
+                list.push([])
+                for (var n of range(cH)) {
+                    list[l].push([])
+                    for (var m of range(cW)) {
+                        list[l][n].push(0)
+                    }
+                }
+                l++
+            }
+        var trN = 1
+        var lin = 0
+        for (var u of document.getElementById("savetime").value.split(",").map(Number)) {
+            for (t = 0; t <= Number(u); t++) {
+                var i = 0
+                var j = []
+                for (var l of range(funcList.length)) {
+                    j.push([])
+                    for (var n of range(cH)) {
+                        j[l].push([])
+                        for (var m of range(cW)) {
+                            j[l][n].push(0)
+                        }
+                    }
+                }
+                for (var k of funcList) {
+                    var p = roughList[i]
+                    for (var x = 0; x <= cW - 1;) {
+                        for (var y = 0; y <= cH - 1;) {
+                            if (trackList[i] == trN) {
+                                if (k(x, y)) {
+                                    j[i][Math.round(y)][Math.round(x)] = 1
+                                    //list[t][Math.round(y)][Math.round(x)] = 1
+                                    //fillRect(Math.round(x - 1), Math.round(y), 1, 1)
+                                }
+                            }
+                            y += 1 / p()
+                        }
+                        x += 1 / p()
+                    }
+                    i++
+                }
+                for (var n of range(j.length)) {
+                    var b = brigList[n]
+                    for (var x of range(cW)) {
+                        for (var y of range(cH)) {
+                            if (j[n][y][x] == 1) { list[t + lin][y][x] += Math.round(b(x, y)) }
+                            if (list[t + lin][y][x] > 0xffffff) list[t + lin][y][x] = 0xffffff
+                        }
+                    }
+                }
+            }
+            trN++
+            lin += u + 1
+        }
+        return list
+    }
+    function downloadFile(content, fileName, contentType) {
+        const a = document.createElement("a");
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    var rgb = (r, g, b) => {
+        r = Math.round(r)
+        if (r < 0) r = 0
+        if (r > 255) r = 255
+        g = Math.round(g)
+        if (g < 0) g = 0
+        if (g > 255) g = 255
+        b = Math.round(b)
+        if (b < 0) b = 0
+        if (b > 255) b = 255
+        return b + 256 * g + (256 ** 2) * r
+    }
+</script>
+
+</html>
