@@ -67,7 +67,7 @@ input:focus {
     border-color: rgba(50, 150, 255, 0.5);
 }
 
-button {
+.container　button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -85,13 +85,13 @@ button {
     font-family: "Kaisei Opti", serif;
 }
 
-button:hover {
+.container　button:hover {
     background-color: rgba(50, 150, 255, 0.5);
     transform: scale(1.1);
     cursor: pointer;
 }
 
-button:active {
+.container　button:active {
     background-color: rgba(50, 150, 255, 0.7);
     transform: scale(1.0);
 }
