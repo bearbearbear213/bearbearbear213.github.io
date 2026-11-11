@@ -169,6 +169,93 @@ fin()
 <script src="https://cdn.jsdelivr.net/gh/bearbearbear213/My-pseudo-game-engine@v5/latter.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/bearbearbear213/My-pseudo-game-engine@latest/peepSound.js"></script>
 <script>
+    function playKick(vol) {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    // 【修正】周波数を150Hzから「30Hz」まで落とす（0.01はエラーの原因になります）
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.exponentialRampToValueAtTime(30, now + 0.3);
+
+    // 【修正】音量の開始点をほんの少しだけズラして、確実にフェードアウトを効かせる
+    gain.gain.setValueAtTime(vol?vol:1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+    osc.start(now);
+    osc.stop(now + 0.3);
+  } catch(e) {
+    console.log(e);
+  }
+}
+
+function playSnare(vol) {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const now = audioCtx.currentTime;
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  // 1. ノイズ（ザラザラ音）の生成
+  const bufferSize = audioCtx.sampleRate * 0.2; 
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1; 
+  }
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 1000;
+
+  const noiseGain = audioCtx.createGain();
+  noiseGain.gain.setValueAtTime(vol?vol:0.7, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+  noise.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(audioCtx.destination);
+
+  // 2. トーン音
+  const osc = audioCtx.createOscillator();
+  const oscGain = audioCtx.createGain();
+  
+  // 【修正】スネアのトーンも安全な値に変更
+  osc.frequency.setValueAtTime(180, now);
+  osc.frequency.exponentialRampToValueAtTime(60, now + 0.1); 
+
+  oscGain.gain.setValueAtTime(vol?vol:0.7, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+  osc.connect(oscGain);
+  oscGain.connect(audioCtx.destination);
+
+  noise.start(now);
+  noise.stop(now + 0.2);
+  osc.start(now);
+  osc.stop(now + 0.1);
+}
+
+var per=(f,vol) => {
+  if (f==1) playKick(vol);
+  else if(f==2)playSnare(vol);
+}
+
     var c = document.getElementById("main").style
     c.display = "none"
     const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
