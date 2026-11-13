@@ -14,6 +14,9 @@ pe[2].setDelay()
 pe[3].vol = 0.1
 pe[3].changeType(1)
 pe[3].setDelay()
+codeM.vol = 0.1
+codeM.changeType(1)
+codeM.setDelay()
 var u=undefined
 var c=codes()
 var e=cosEq(c.maj,c.maj,c.maj)
@@ -169,13 +172,20 @@ fin()
 <script src="https://cdn.jsdelivr.net/gh/bearbearbear213/My-pseudo-game-engine@v5/latter.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/bearbearbear213/My-pseudo-game-engine@latest/peepSound.js"></script>
 <script>
+  var kickCtx=new (window.AudioContext || window.webkitAudioContext)();
+    
+    if (kickCtx.state === 'suspended') {
+      kickCtx.resume();
+    }
+  var snCtx=new (window.AudioContext || window.webkitAudioContext)();
+  
+
+  if (snCtx.state === 'suspended') {
+    snCtx.resume();
+  }
     function playKick(vol) {
   try {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    const audioCtx = kickCtx
 
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -201,13 +211,8 @@ fin()
 }
 
 function playSnare(vol) {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const now = audioCtx.currentTime;
-
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-
+  const audioCtx = snCtx
+  const now = snCtx.currentTime;
   // 1. ノイズ（ザラザラ音）の生成
   const bufferSize = audioCtx.sampleRate * 0.2; 
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -250,10 +255,12 @@ function playSnare(vol) {
   osc.start(now);
   osc.stop(now + 0.1);
 }
-
+var rn=0
 var per=(f,vol) => {
   if (f==1) playKick(vol);
   else if(f==2)playSnare(vol);
+  rn++
+  ok(rn)
 }
 
     var c = document.getElementById("main").style
@@ -348,6 +355,7 @@ var per=(f,vol) => {
     var fin = () => {
         tracks = []
         pe.map(n => n.stopAll())
+        codeM.stopAll()
         finishing = true
     }
     var musicStart = async () => {
@@ -391,6 +399,14 @@ var per=(f,vol) => {
         }
         ok(t)
     }
+  var codeM=new MultiToneGenerator()
+  var code=(b,...any)=>{
+    codeM.stopAll()
+    codeM.start(defHz*b)
+    for(var n of any){
+      codeM.start(defHz*b*n)
+    }
+  }
 </script>
 
 </html>
